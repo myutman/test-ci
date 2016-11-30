@@ -170,7 +170,7 @@ def test_scope(scope):
     assert child["bar"].value == 10
     child["bar"] = Number(20)
     assert child["bar"].value == 20
-    assert type(child["bar"]) == Number
+    assert isinstance(child["bar"], Number)
 
 
 def test_scope_missing(scope):
