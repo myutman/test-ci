@@ -1,0 +1,13 @@
+os:
+  - linux
+  - osx
+language:
+  - python
+python:
+  - "2.7"
+  - "3.5"
+install:
+  - pip install pytest
+  - cd test-ci
+script:
+  - py.test model.py
