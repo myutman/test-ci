@@ -9,7 +9,6 @@ python:
 install:
   - pip install pytest
   - pip install python-coveralls
-  - cd test-ci
 script:
   - py.test model.py
 after_success:
