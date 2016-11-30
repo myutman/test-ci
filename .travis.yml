@@ -8,6 +8,6 @@ python:
 install:
   - pip install -r test_requirements.txt
 script:
-  - py.test model.py --pep8 model --cov model -v
+  - py.test model.py --pep8 model.py --cov model.py -v
 after_success:
   - coveralls
