@@ -9,6 +9,6 @@ install:
   - pip install pytest
   - pip install python-coveralls
 script:
-  - py.test model.py --pep8 coveralls -v --cov coveralls
+  - py.test model.py
 after_success:
   - coveralls
