@@ -8,6 +8,9 @@ python:
   - "3.5"
 install:
   - pip install pytest
+  - pip install python-coveralls
   - cd test-ci
 script:
   - py.test model.py
+after_success:
+  - coveralls
