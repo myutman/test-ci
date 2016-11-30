@@ -1,7 +1,9 @@
 import operator
 import pytest
 
+
 class Scope(object):
+
     def __init__(self, parent=None):
         self.dict = dict()
         self.parent = parent
@@ -19,6 +21,7 @@ class Scope(object):
 
 
 class Number:
+
     def __init__(self, value):
         self.value = int(value)
 
@@ -27,6 +30,7 @@ class Number:
 
 
 class Reference:
+
     def __init__(self, name):
         self.name = name
 
@@ -36,7 +40,7 @@ class Reference:
 
 class UnaryOperation:
     ops = {"-": operator.neg,
-            "!":operator.not_}
+           "!": operator.not_}
 
     def __init__(self, op, expr):
         self.op = op
@@ -49,18 +53,18 @@ class UnaryOperation:
 
 class BinaryOperation:
     ops = {"+": operator.add,
-            "-":operator.sub,
-            "*":operator.mul,
-            "/":operator.floordiv,
-            "%":operator.mod,
-            "==":operator.eq,
-            "!=":operator.ne,
-            "<":operator.lt,
-            ">":operator.gt,
-            "<=":operator.le,
-            ">=":operator.ge,
-            "&&":lambda x, y: bool(x and y),
-            "||":lambda x, y: bool(x or y)}
+           "-": operator.sub,
+           "*": operator.mul,
+           "/": operator.floordiv,
+           "%": operator.mod,
+           "==": operator.eq,
+           "!=": operator.ne,
+           "<": operator.lt,
+           ">": operator.gt,
+           "<=": operator.le,
+           ">=": operator.ge,
+           "&&": lambda x, y: bool(x and y),
+           "||": lambda x, y: bool(x or y)}
 
     def __init__(self, lhs, op, rhs):
         self.lhs = lhs
@@ -74,6 +78,7 @@ class BinaryOperation:
 
 
 class Function:
+
     def __init__(self, args, body):
         self.body = body
         self.args = args
@@ -86,6 +91,7 @@ class Function:
 
 
 class FunctionDefinition:
+
     def __init__(self, name, function):
         self.name = name
         self.func = function
@@ -96,6 +102,7 @@ class FunctionDefinition:
 
 
 class FunctionCall:
+
     def __init__(self, fun_expr, args):
         self.args = args
         self.fun_expr = fun_expr
@@ -110,7 +117,8 @@ class FunctionCall:
 
 
 class Conditional:
-    def __init__(self, condition, if_true, if_false = None):
+
+    def __init__(self, condition, if_true, if_false=None):
         self.condition = condition
         self.if_true = if_true
         self.if_false = if_false
@@ -130,6 +138,7 @@ class Conditional:
 
 
 class Print:
+
     def __init__(self, expr):
         self.expr = expr
 
@@ -140,6 +149,7 @@ class Print:
 
 
 class Read:
+
     def __init__(self, name):
         self.name = name
 
@@ -149,29 +159,38 @@ class Read:
         return Number(a)
 
 
-def test():
-    #Example
-    parent = Scope()
-    parent["bar"] = Number(10)
-    scope = Scope(parent)
-    parent["foo"] = Function(('hello', 'world'),
-                             [Print(BinaryOperation(Reference('hello'), '+', Reference('world')))])
-    assert type(FunctionCall(FunctionDefinition('foo', parent['foo']),
-                 [Number(5), UnaryOperation('-', Number(3))]).evaluate(scope)) == Number
-    assert scope["bar"].value == 10
-    scope["bar"] = Number(20)
-    assert scope["bar"].value == 20
-    assert type(scope["bar"]) == Number
+@pytest.fixture(scope="function")
+def scope():
+    return Scope()
 
-    assert BinaryOperation(Number(5), "&&", Number(0)).evaluate(scope).value == 0
-    assert BinaryOperation(Number(5), "&&", Number(-2)).evaluate(scope).value == 1
-    assert UnaryOperation("!", Number(5)).evaluate(scope).value == 0
 
-def test_scope():
+def test_scope(scope):
+    scope["bar"] = Number(10)
+    child = Scope(scope)
+    assert child["bar"].value == 10
+    child["bar"] = Number(20)
+    assert child["bar"].value == 20
+    assert type(child["bar"]) == Number
+
+
+def test_scope_missing(scope):
     with pytest.raises(Exception):
-        sc = Scope()
-        sc['missing']
+        scope['missing']
 
-if __name__ == '__main__':
-    test()
-    test_scope()
+
+def test_function_call(scope):
+    scope["foo"] = Function(('hello', 'world'),
+                            [Print(BinaryOperation(Reference('hello'), '+', Reference('world')))])
+    assert type(FunctionCall(FunctionDefinition('foo', scope['foo']),
+                             [Number(5), UnaryOperation('-', Number(3))]).evaluate(scope)) == Number
+
+
+def test_binary_operation(scope):
+    assert BinaryOperation(Number(5), "&&", Number(0)
+                           ).evaluate(scope).value == 0
+    assert BinaryOperation(Number(5), "&&", Number(-2)
+                           ).evaluate(scope).value == 1
+
+
+def test_unary_operation(scope):
+    assert UnaryOperation("!", Number(5)).evaluate(scope).value == 0

@@ -6,10 +6,8 @@ python:
   - "3.4"
   - "3.5"
 install:
-  - pip install pytest
-  - pip install coveralls
+  - pip install -r test_requirements.txt
 script:
-  - py.test model.py
-  - coverage run --source=model model.py
+  - py.test model.py --pep8 --cov -v
 after_success:
   - coveralls
