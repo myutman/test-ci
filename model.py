@@ -180,9 +180,12 @@ def test_scope_missing(scope):
 
 def test_function_call(scope):
     scope["foo"] = Function(('hello', 'world'),
-                            [Print(BinaryOperation(Reference('hello'), '+', Reference('world')))])
-    assert type(FunctionCall(FunctionDefinition('foo', scope['foo']),
-                             [Number(5), UnaryOperation('-', Number(3))]).evaluate(scope)) == Number
+                            [Print(BinaryOperation(Reference('hello'),
+                                                   '+',
+                                                   Reference('world')))])
+    body = [Number(5), UnaryOperation('-', Number(3))]
+    assert isinstance(FunctionCall(FunctionDefinition('foo', scope['foo']),
+                                   body).evaluate(scope), Number)
 
 
 def test_binary_operation(scope):
