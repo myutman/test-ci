@@ -7,8 +7,9 @@ python:
   - "3.5"
 install:
   - pip install pytest
-  - pip install python-coveralls
+  - pip install coveralls
 script:
   - py.test model.py
+  - coverage run model.py
 after_success:
   - coveralls
