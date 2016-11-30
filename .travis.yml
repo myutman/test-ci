@@ -10,6 +10,6 @@ install:
   - pip install coveralls
 script:
   - py.test model.py
-  - coverage run model.py
+  - coverage run --source=model model.py
 after_success:
   - coveralls
